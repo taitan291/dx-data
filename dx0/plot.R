@@ -1,9 +1,15 @@
-# Run: Rscript plot_iv.R [input.csv] [output.png] [smoothing]
+# Run: Rscript dx0/plot.R [input.csv] [output.png] [smoothing]
 # Smoothing: 0 to 1; larger values give a smoother trend (default: 0.6).
 # Input is read only. Power is taken directly from data.0.
+script_arg <- grep("^--file=", commandArgs(), value = TRUE)
+script_dir <- if (length(script_arg)) {
+  dirname(normalizePath(sub("^--file=", "", script_arg[1L])))
+} else {
+  getwd()
+}
 args <- commandArgs(trailingOnly = TRUE)
-input <- if (length(args) >= 1L) args[1L] else "dx0.csv"
-output <- if (length(args) >= 2L) args[2L] else "solar_panel_iv_pv.png"
+input <- if (length(args) >= 1L) args[1L] else file.path(script_dir, "data.csv")
+output <- if (length(args) >= 2L) args[2L] else file.path(script_dir, "solar_panel_iv_pv.png")
 smoothing <- if (length(args) >= 3L) as.numeric(args[3L]) else 0.6
 if (!is.finite(smoothing) || smoothing < 0 || smoothing > 1) {
   stop("Smoothing must be a number between 0 and 1.")
